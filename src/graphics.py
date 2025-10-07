@@ -171,7 +171,6 @@ class Graphics:
 
         plt.show()
         plt.close()
-<<<<<<< HEAD
 
     def correlacion_graphic(self):
         # Obtener matriz de correlación
@@ -189,14 +188,14 @@ class Graphics:
 
         corr.rename(index=etiquetas_cortas, columns=etiquetas_cortas, inplace=True)
 
-        # Crear colormap suave de azul claro a rojo claro
-        colors = ['#cce5ff', '#99ccff', '#ffcc99', '#ff9999']  # azul claro → rojo claro
+    
+        colors = ['#cce5ff', '#99ccff', '#ffcc99', '#ff9999']  
         cmap = LinearSegmentedColormap.from_list("soft_cmap", colors)
 
-        # Figura
+
         plt.figure(figsize=(10,8))
 
-        # Graficar heatmap
+
         sns.heatmap(
             corr,
             annot=True,
@@ -205,7 +204,7 @@ class Graphics:
             linewidths=0.5,
             linecolor='gray',
             cbar_kws={'shrink': 0.7, 'label': 'Correlación'},
-            vmin=0, vmax=1  # azul = mínimo, rojo = máximo
+            vmin=0, vmax=1  
         )
 
         # Rotación de etiquetas
@@ -222,6 +221,3 @@ class Graphics:
 
 
                 
-=======
-        
->>>>>>> f84f4d8ee6e3e0a65af75b8b70fb295cbdaa8966

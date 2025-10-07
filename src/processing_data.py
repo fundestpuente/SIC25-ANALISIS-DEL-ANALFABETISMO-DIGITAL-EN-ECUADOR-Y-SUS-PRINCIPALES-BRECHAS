@@ -78,7 +78,6 @@ class Data:
         
         df_resultado = pd.DataFrame(resultados)
         print(df_resultado)
-<<<<<<< HEAD
         return df_resultado
     
     def correlacion_data(self):
@@ -92,13 +91,9 @@ class Data:
             'Es capaz de evaluar y elegir de manera adecuada un dispositivo, software, aplicacion o servicio para realizar sus tareas'
         ]
 
-        # Convertir Sí/No a 1/0 (si aplica)
         for col in columnas:
             df[col] = df[col].str.strip().str.lower().replace({'sí': 1, 'si': 1, 'no': 0})
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
 
         corr = df[columnas].corr()
         return corr
-=======
-        return df_resultado
->>>>>>> f84f4d8ee6e3e0a65af75b8b70fb295cbdaa8966
