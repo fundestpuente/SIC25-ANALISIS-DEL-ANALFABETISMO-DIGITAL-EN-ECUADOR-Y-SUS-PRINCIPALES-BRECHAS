@@ -52,3 +52,49 @@ class Data:
 
         print(df_resultado)
         return df_resultado
+
+    def tecnologias_si_no(self):
+        columnas_tecnologicas = [
+            'Conoce las oportunidades que el IOT (Internet de las cosas) puede aportar en su trabajo y empresa',
+            'Conoce las oportunidades que el IA (Inteligencia artificial) puede aportar en su trabajo y empresa',
+            'Conoce o ha utilizado servicios de alojamiento de archivos en la nube',
+            'Ha participado en consultas ciudadanas o encuestas a traves de internet (online) a propuestas de organizaciones publicas o sociales',
+            'Participa en experiencias innovadoras relacionadas con el uso de nuevas tecnologias'
+        ]
+        
+        resultados = []
+        
+        for columna in columnas_tecnologicas:
+            if columna in self.df.columns:
+                conteo = self.df[columna].value_counts()
+                si_count = conteo.get('Si', 0)
+                no_count = conteo.get('No', 0)
+                
+                resultados.append({
+                    'Pregunta': columna,
+                    'Si': si_count,
+                    'No': no_count
+                })
+        
+        df_resultado = pd.DataFrame(resultados)
+        print(df_resultado)
+        return df_resultado
+    
+    def correlacion_data(self):
+        df = self.df.copy()
+        columnas = [
+            'Tiene conocimientos de computacion y navegacion en internet',
+            'Identifica parametros que deben cumplir las paginas web y la informacion online para considerar su confiabilidad y calidad',
+            'Sabe editar y modificar con herramientas digitales, el formato de diferentes tipos de archivo textos, fotografias, videos',
+            'Conoce y actua con prudencia cuando recibe mensajes cuyo remitente, contenido o archivo adjunto sea desconocido (SPAM)',
+            'Se interesa en conocer las politicas de privacidad de las plataformas que utiliza en Internet, asi como el tratamiento que hacen de sus datos personales',
+            'Es capaz de evaluar y elegir de manera adecuada un dispositivo, software, aplicacion o servicio para realizar sus tareas'
+        ]
+
+        # Convertir Sí/No a 1/0 (si aplica)
+        for col in columnas:
+            df[col] = df[col].str.strip().str.lower().replace({'sí': 1, 'si': 1, 'no': 0})
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
+
+        corr = df[columnas].corr()
+        return corr
