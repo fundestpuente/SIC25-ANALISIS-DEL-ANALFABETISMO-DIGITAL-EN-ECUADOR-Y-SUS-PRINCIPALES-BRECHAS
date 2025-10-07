@@ -121,3 +121,62 @@ class Graphics:
         plt.show()
         plt.close()
 
+    def graphic_si_no(self):
+        """
+        Grafica barras agrupadas (Sí vs No) para un conjunto de preguntas
+        de adopción/uso tecnológico y guarda el PNG en ../graphics.
+        Requiere un DataFrame con columnas 'Pregunta', 'Si', 'No'.
+        """
+        # 1) Obtener dataframe con los conteos por pregunta
+        # Debe tener columnas: ['Pregunta', 'Si', 'No']
+        df = self.data.tecnologias_si_no()   # <-- ver helper de Data más abajo
+
+        # (Opcional) ordenar por número de 'Si' descendente para lectura rápida
+        df = df.sort_values('Si', ascending=False)
+
+        # (Opcional) etiquetas cortas para el eje X
+        etiquetas_cortas = {
+            "Conoce las oportunidades que el IOT (Internet de las cosas) puede aportar en su trabajo y empresa": "IoT",
+            "Conoce las oportunidades que el IA (Inteligencia artificial) puede aportar en su trabajo y empresa": "IA",
+            "Conoce o ha utilizado servicios de alojamiento de archivos en la nube": "Nube",
+            "Ha participado en consultas ciudadanas o encuestas a traves de internet (online) a propuestas de organizaciones publicas o sociales": "Participación",
+            "Participa en experiencias innovadoras relacionadas con el uso de nuevas tecnologias": "Innovación"
+        }
+        df['Etiqueta'] = df['Pregunta'].map(lambda x: etiquetas_cortas.get(x, x))
+
+        # 2) Pasar a formato largo para seaborn
+        df_melt = df.melt(
+            id_vars=['Pregunta', 'Etiqueta'],
+            value_vars=['Si', 'No'],
+            var_name='Respuesta',
+            value_name='Cantidad'
+        )
+
+        # 3) Graficar
+        plt.figure(figsize=(12, 8))
+        ax = sns.barplot(
+            data=df_melt,
+            x='Etiqueta',
+            y='Cantidad',
+            hue='Respuesta',
+            dodge=True,
+            palette='Set2'
+        )
+
+        # Etiquetas en barras
+        for container in ax.containers:
+            ax.bar_label(container, fontsize=10)
+
+        plt.title('Uso de Tecnologías Digitales (Sí vs No)', fontsize=16, fontweight='bold')
+        plt.xlabel('Pregunta')
+        plt.ylabel('Cantidad de respuestas')
+        plt.grid(axis='y', linestyle='--', alpha=0.6)
+        plt.legend(title='Respuesta')
+        plt.tight_layout()
+        ruta_guardado = os.path.join(self.generar_direccion(), 'grafico_tecnologias_si_no.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+
+        plt.show()
+        plt.close()
+
+
