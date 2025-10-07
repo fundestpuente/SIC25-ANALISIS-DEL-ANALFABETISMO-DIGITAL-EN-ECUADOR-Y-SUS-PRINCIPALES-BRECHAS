@@ -78,6 +78,7 @@ class Data:
         
         df_resultado = pd.DataFrame(resultados)
         print(df_resultado)
+<<<<<<< HEAD
         return df_resultado
     
     def correlacion_data(self):
@@ -98,3 +99,6 @@ class Data:
 
         corr = df[columnas].corr()
         return corr
+=======
+        return df_resultado
+>>>>>>> f84f4d8ee6e3e0a65af75b8b70fb295cbdaa8966

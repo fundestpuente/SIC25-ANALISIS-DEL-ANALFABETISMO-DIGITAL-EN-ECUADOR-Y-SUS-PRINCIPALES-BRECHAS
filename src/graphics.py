@@ -171,6 +171,7 @@ class Graphics:
 
         plt.show()
         plt.close()
+<<<<<<< HEAD
 
     def correlacion_graphic(self):
         # Obtener matriz de correlación
@@ -221,3 +222,6 @@ class Graphics:
 
 
                 
+=======
+        
+>>>>>>> f84f4d8ee6e3e0a65af75b8b70fb295cbdaa8966
