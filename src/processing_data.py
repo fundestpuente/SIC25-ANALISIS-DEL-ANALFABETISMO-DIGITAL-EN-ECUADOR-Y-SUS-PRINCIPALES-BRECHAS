@@ -54,11 +54,6 @@ class Data:
         return df_resultado
 
     def tecnologias_si_no(self):
-        """
-        Procesa las preguntas de tecnologías digitales y retorna conteos de Si/No
-        para cada pregunta tecnológica.
-        """
-        # Columnas de preguntas tecnológicas
         columnas_tecnologicas = [
             'Conoce las oportunidades que el IOT (Internet de las cosas) puede aportar en su trabajo y empresa',
             'Conoce las oportunidades que el IA (Inteligencia artificial) puede aportar en su trabajo y empresa',
@@ -71,7 +66,6 @@ class Data:
         
         for columna in columnas_tecnologicas:
             if columna in self.df.columns:
-                # Contar respuestas Si y No
                 conteo = self.df[columna].value_counts()
                 si_count = conteo.get('Si', 0)
                 no_count = conteo.get('No', 0)

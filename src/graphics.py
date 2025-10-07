@@ -122,19 +122,11 @@ class Graphics:
         plt.close()
 
     def graphic_si_no(self):
-        """
-        Grafica barras agrupadas (Sí vs No) para un conjunto de preguntas
-        de adopción/uso tecnológico y guarda el PNG en ../graphics.
-        Requiere un DataFrame con columnas 'Pregunta', 'Si', 'No'.
-        """
-        # 1) Obtener dataframe con los conteos por pregunta
-        # Debe tener columnas: ['Pregunta', 'Si', 'No']
-        df = self.data.tecnologias_si_no()   # <-- ver helper de Data más abajo
+        
+        df = self.data.tecnologias_si_no() 
 
-        # (Opcional) ordenar por número de 'Si' descendente para lectura rápida
         df = df.sort_values('Si', ascending=False)
 
-        # (Opcional) etiquetas cortas para el eje X
         etiquetas_cortas = {
             "Conoce las oportunidades que el IOT (Internet de las cosas) puede aportar en su trabajo y empresa": "IoT",
             "Conoce las oportunidades que el IA (Inteligencia artificial) puede aportar en su trabajo y empresa": "IA",
@@ -142,7 +134,7 @@ class Graphics:
             "Ha participado en consultas ciudadanas o encuestas a traves de internet (online) a propuestas de organizaciones publicas o sociales": "Participación",
             "Participa en experiencias innovadoras relacionadas con el uso de nuevas tecnologias": "Innovación"
         }
-        df['Etiqueta'] = df['Pregunta'].map(lambda x: etiquetas_cortas.get(x, x))
+        df['Etiqueta'] = df['Pregunta'].astype(str).map(lambda x: etiquetas_cortas.get(x, x))
 
         # 2) Pasar a formato largo para seaborn
         df_melt = df.melt(
@@ -165,7 +157,7 @@ class Graphics:
 
         # Etiquetas en barras
         for container in ax.containers:
-            ax.bar_label(container, fontsize=10)
+            ax.bar_label(container, fontsize=10) #type:ignore
 
         plt.title('Uso de Tecnologías Digitales (Sí vs No)', fontsize=16, fontweight='bold')
         plt.xlabel('Pregunta')
@@ -178,5 +170,4 @@ class Graphics:
 
         plt.show()
         plt.close()
-
-
+        
