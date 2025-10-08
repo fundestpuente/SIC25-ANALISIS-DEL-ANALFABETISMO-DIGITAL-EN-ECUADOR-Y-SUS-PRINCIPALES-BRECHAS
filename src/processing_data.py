@@ -212,4 +212,107 @@ class Data:
             df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
 
         corr = df[columnas].corr()
-        return corr
+        return corr    
+        
+    def edad_fundamentos_digitales(self):
+        """
+        Procesa datos para el boxplot de edad por respuesta sobre fundamentos digitales
+        """
+        import numpy as np
+        
+        # Columna de la pregunta sobre fundamentos digitales
+        q_col = "Conoce los fundamentos de los procesos digitales y de la creacion de software. Entiendo los principios de la programacion"
+        
+        def norm_resp_bin(x):
+            """Normaliza las respuestas a formato binario"""
+            s = str(x).strip().lower()
+            if s in ["si", "sí", "true", "1", "de acuerdo", "totalmente de acuerdo"]:
+                return "Sí"
+            if s in ["no", "false", "0", "en desacuerdo", "totalmente en desacuerdo"]:
+                return "No"
+            return np.nan
+        
+        # Preparar datos
+        data = self.df[[q_col, "Edad"]].copy()
+        data["Respuesta"] = data[q_col].apply(norm_resp_bin)
+        data["Edad"] = pd.to_numeric(data["Edad"], errors="coerce")
+        data = data.dropna(subset=["Respuesta", "Edad"])
+        
+        # Estadísticas básicas
+        stats = data.groupby("Respuesta")["Edad"].agg(['count', 'mean', 'std', 'min', 'max']).round(2)
+        
+        print("Estadísticas de edad por respuesta sobre fundamentos digitales:")
+        print(stats)
+        print(f"\nTotal de registros procesados: {len(data)}")
+        
+        return data
+
+    def radar_deficiencias_edad(self):
+        """
+        Procesa datos para el gráfico de radar de deficiencias en habilidades digitales por edad
+        """
+        import numpy as np
+        
+        def find_col_contains(fragment):
+            """Encuentra columna que contenga el fragmento especificado"""
+            frag = fragment.lower()
+            for c in self.df.columns:
+                if frag in str(c).lower():
+                    return c
+            return None
+
+        def norm_yesno(x):
+            """Normaliza respuestas a valores numéricos"""
+            s = str(x).strip().lower()
+            if s in ["si", "sí", "true", "1", "de acuerdo", "totalmente de acuerdo"]:
+                return 1.0
+            if s in ["no", "false", "0", "en desacuerdo", "totalmente en desacuerdo"]:
+                return 0.0
+            return np.nan
+
+        # Definir ítems (6 preguntas clave)
+        items_text = [
+            "Conoce como utilizar herramientas de busqueda avanzada en Internet",
+            "Clasifica la informacion mediante archivos y carpetas",
+            "Usted sabe como generar un perfil publico, personal o profesional en las Redes Sociales",
+            "Es capaz de utilizar los diferentes medios digitales para exponer de manera creativa esquemas graficos",
+            "Conoce los fundamentos de los procesos digitales y de la creacion de software. Entiendo los principios de la programacion",
+            "Se mantiene informado y actualizado sobre habitos saludables y seguros en el uso de la tecnologia"
+        ]
+        item_cols = [find_col_contains(t) for t in items_text]
+
+        # Preparar datos
+        age_col = "Edad" if "Edad" in self.df.columns else find_col_contains("edad")
+        work = pd.DataFrame({"Edad": pd.to_numeric(self.df[age_col], errors="coerce")})
+        
+        for label, col in zip(items_text, item_cols):
+            if col and col in self.df.columns:
+                work[label] = self.df[col].apply(norm_yesno)
+
+        # Bins de edad
+        bins = [15, 25, 35, 45, 55, 65, 120]
+        labels = ["15–24", "25–34", "35–44", "45–54", "55–64", "65+"]
+        work["grupo_edad"] = pd.cut(work["Edad"], bins=bins, labels=labels, right=False, include_lowest=True)
+
+        # Calcular % de deficiencias (No) por grupo e ítem
+        group_stats_no = (
+            work.dropna(subset=["grupo_edad"])
+                .groupby("grupo_edad", observed=True)[items_text]
+                .apply(lambda d: (1.0 - d.mean()) * 100)
+                .reindex(labels)
+        )
+
+        # Contar n por grupo
+        n_by_group = (
+            work.dropna(subset=["grupo_edad"])
+                .groupby("grupo_edad", observed=True)["Edad"]
+                .count()
+                .reindex(labels).fillna(0).astype(int)
+        )
+
+        print("Datos procesados para gráfico de radar:")
+        print(f"Grupos de edad: {labels}")
+        print(f"Total de registros: {len(work.dropna(subset=['grupo_edad']))}")
+        print(f"Habilidades analizadas: {len(items_text)}")
+        
+        return work, group_stats_no, n_by_group, items_text, labels
