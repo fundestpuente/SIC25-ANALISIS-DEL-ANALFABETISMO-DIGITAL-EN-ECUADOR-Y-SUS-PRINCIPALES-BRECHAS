@@ -1,0 +1,345 @@
+import matplotlib
+matplotlib.use('Agg')  # Backend no interactivo
+
+import matplotlib.pyplot as plt
+import os
+import seaborn as sns
+import pandas as pd
+
+from src.processing_data import Data
+from matplotlib.colors import LinearSegmentedColormap
+
+class Graphics:
+    def __init__(self):
+        self.data = Data()
+    
+    def generar_direccion(self):
+        script_dir = os.path.dirname(__file__)
+        new_path = os.path.join(script_dir, '..', 'graphics')
+        new_path = os.path.abspath(new_path)
+
+        if not os.path.exists(new_path):
+            os.makedirs(new_path, exist_ok=True)
+        
+        return new_path
+    
+    def grafico_prov_pun(self):
+        provincia_puntuacion = self.data.provincia_puntuacion().sort_values('Puntuacion', ascending=True)
+
+        colores = sns.color_palette("Blues", len(provincia_puntuacion))
+        plt.figure(figsize=(12, 8))
+
+        bars = plt.barh(provincia_puntuacion['Provincia'], provincia_puntuacion['Puntuacion'], color=colores, edgecolor='black', height=0.6)
+
+        for bar in bars:
+            width = bar.get_width()
+            plt.text(width + 0.5, bar.get_y() + bar.get_height()/2,
+                    f'{width:.2f}', va='center', fontsize=10, fontweight='bold', color='black')
+        
+        plt.xlabel('Puntuacion Promedio')
+        plt.ylabel('Provincia')
+        plt.grid(axis='x', linestyle='--', alpha=0.7)
+        sns.despine(left=True, bottom=True)
+        plt.title('Promedio de Puntuación por Provincia')
+        plt.xticks(rotation=45)
+
+        plt.tight_layout()
+
+        ruta_guardado = os.path.join(self.generar_direccion(), 'grafico_provincia.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        plt.close()
+        return ruta_guardado
+
+    def grafico_gen_pun(self):
+        df = self.data.genero_puntuacion_edad()
+
+        rango_edad = ['0-12', '12-18', '18-30', '30-60', '+60']
+        df['RangoEdad'] = pd.Categorical(df['RangoEdad'], categories=rango_edad, ordered=True)
+
+        plt.figure(figsize=(12, 8))
+
+        bars = sns.barplot(
+            data=df,
+            x='RangoEdad',
+            y='Puntuacion',
+            hue='Genero',
+            dodge=True,
+            palette='Set2'
+        )
+
+        plt.title('Promedio de Puntuación por Género y Rango de Edad', fontsize=16, fontweight='bold')
+        plt.xlabel('Rango de Edad', fontsize=12, fontweight='bold')
+        plt.ylabel('Puntuación Promedio', fontsize=12, fontweight='bold')
+        plt.xticks(fontsize=12, fontweight='bold', ha='center')
+        plt.ylim(0, df['Puntuacion'].max() + 1)
+        plt.legend(title='Género')
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        sns.despine(left=True, bottom=True)
+        plt.tight_layout()
+        
+        ruta_guardado = os.path.join(self.generar_direccion(), 'grafico_edad.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        plt.close()
+        return ruta_guardado
+
+    def grafico_empresa_ent(self):
+        df = self.data.empresa_competencia()
+
+        df_melt = df.melt(
+            id_vars='Empresa',
+            value_vars=['Si', 'No'],
+            var_name='Respuesta',
+            value_name='Cantidad'
+        )
+
+        plt.figure(figsize=(12, 8))
+        ax = sns.barplot(
+            data=df_melt,
+            x='Empresa',
+            y='Cantidad',
+            hue='Respuesta',
+            dodge=True,
+            palette='Set2'
+        )
+
+        for container in ax.containers:
+            ax.bar_label(container)
+
+        plt.title('Competencia Digital por Tipo de Empresa', fontsize=14)
+        plt.xticks(rotation=45, ha='right')
+        plt.legend(title='Conoce su nivel de competencia')
+        plt.tight_layout()
+
+        ruta_guardado = os.path.join(self.generar_direccion(), 'grafico_empresa.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        plt.close()
+        return ruta_guardado
+
+    def graphic_si_no(self):
+        df = self.data.tecnologias_si_no()
+        df = df.sort_values('Si', ascending=False)
+
+        etiquetas_cortas = {
+            "Conoce las oportunidades que el IOT (Internet de las cosas) puede aportar en su trabajo y empresa": "IoT",
+            "Conoce las oportunidades que el IA (Inteligencia artificial) puede aportar en su trabajo y empresa": "IA",
+            "Conoce o ha utilizado servicios de alojamiento de archivos en la nube": "Nube",
+            "Ha participado en consultas ciudadanas o encuestas a traves de internet (online) a propuestas de organizaciones publicas o sociales": "Participación",
+            "Participa en experiencias innovadoras relacionadas con el uso de nuevas tecnologias": "Innovación"
+        }
+        df['Etiqueta'] = df['Pregunta'].astype(str).map(lambda x: etiquetas_cortas.get(x, x))
+
+        df_melt = df.melt(
+            id_vars=['Pregunta', 'Etiqueta'],
+            value_vars=['Si', 'No'],
+            var_name='Respuesta',
+            value_name='Cantidad'
+        )
+
+        plt.figure(figsize=(12, 8))
+        ax = sns.barplot(
+            data=df_melt,
+            x='Etiqueta',
+            y='Cantidad',
+            hue='Respuesta',
+            dodge=True,
+            palette='Set2'
+        )
+
+        for container in ax.containers:
+            ax.bar_label(container, fontsize=10)
+
+        plt.title('Uso de Tecnologías Digitales (Sí vs No)', fontsize=16, fontweight='bold')
+        plt.xlabel('Pregunta')
+        plt.ylabel('Cantidad de respuestas')
+        plt.grid(axis='y', linestyle='--', alpha=0.6)
+        plt.legend(title='Respuesta')
+        plt.tight_layout()
+        
+        ruta_guardado = os.path.join(self.generar_direccion(), 'grafico_tecnologias_si_no.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        plt.close()
+        return ruta_guardado
+
+    def grafico_participacion_innovacion_ciiu_genero(self):
+        df_group = self.data.participacion_innovacion_ciiu_genero()
+        
+        fig, ax = plt.subplots(figsize=(16, 10))
+        df_group.plot(kind='bar', stacked=True, ax=ax, colormap='Paired')
+        
+        ax.set_title("Participación en experiencias innovadoras por CIIU y Género", fontsize=16)
+        ax.set_xlabel("CIIU (actividades)", fontsize=12)
+        ax.set_ylabel("% de participantes", fontsize=12)
+        plt.xticks(rotation=45, ha='right')
+        plt.legend(title="Género")
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+        
+        plt.tight_layout()
+        
+        ruta_guardado = os.path.join(self.generar_direccion(), 'grafico_participacion_innovacion_ciiu_genero.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        plt.close()
+        return ruta_guardado
+
+    def dashboard_competencia_digital_ciiu(self):
+        import numpy as np
+        
+        df, preguntas_originales, mapa_preguntas = self.data.dashboard_competencia_digital_ciiu()
+        
+        filas = int(np.ceil(len(preguntas_originales)/2))
+        fig, axes = plt.subplots(filas, 2, figsize=(18, filas*5))
+        axes = axes.flatten()
+        
+        colores = {'Si': '#FF0000', 'No': '#89CFF0'}
+        
+        for i, col in enumerate(preguntas_originales):
+            df[col] = df[col].astype(str).str.strip().str.lower().replace({
+                'sí': 'Si', 'si': 'Si', 'no': 'No', 'nan': None
+            })
+            
+            df_group = df.groupby(['CIIU', col], observed=True).size().unstack(fill_value=0)
+            df_percent = df_group.div(df_group.sum(axis=1), axis=0) * 100
+            
+            for respuesta in ['Si', 'No']:
+                if respuesta not in df_percent.columns:
+                    df_percent[respuesta] = 0
+            df_percent = df_percent[['Si', 'No']]
+            
+            ax = axes[i]
+            df_percent.plot(kind='barh', ax=ax, color=[colores['Si'], colores['No']], edgecolor='black')
+            
+            ax.set_title(mapa_preguntas[col], fontsize=13, pad=10)
+            ax.set_xlabel("% de respuestas", fontsize=11)
+            ax.set_ylabel("CIIU", fontsize=11)
+            
+            for container in ax.containers:
+                ax.bar_label(container, fmt='%.1f%%', label_type='edge', fontsize=9)
+            
+            ax.legend(title="Respuesta", bbox_to_anchor=(1.05, 1), loc='upper left')
+            ax.grid(axis='x', linestyle='--', alpha=0.7)
+        
+        plt.tight_layout(pad=3.0)
+        plt.suptitle("Conocimientos y oportunidades digitales por sector (CIIU)", fontsize=16, y=1.02)
+        
+        ruta_guardado = os.path.join(self.generar_direccion(), 'dashboard_competencia_digital_ciiu.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        plt.close()
+        return ruta_guardado
+                
+    def correlacion_graphic(self):
+        corr = self.data.correlacion_data()
+
+        etiquetas_cortas = {
+            'Tiene conocimientos de computacion y navegacion en internet': 'Comp-Internet',
+            'Identifica parametros que deben cumplir las paginas web y la informacion online para considerar su confiabilidad y calidad': 'Confiabilidad',
+            'Sabe editar y modificar con herramientas digitales, el formato de diferentes tipos de archivo textos, fotografias, videos': 'Edicion-Archivos',
+            'Conoce y actua con prudencia cuando recibe mensajes cuyo remitente, contenido o archivo adjunto sea desconocido (SPAM)': 'Seguridad',
+            'Se interesa en conocer las politicas de privacidad de las plataformas que utiliza en Internet, asi como el tratamiento que hacen de sus datos personales': 'Privacidad',
+            'Es capaz de evaluar y elegir de manera adecuada un dispositivo, software, aplicacion o servicio para realizar sus tareas': 'Eval-Tecnologica'
+        }
+
+        corr.rename(index=etiquetas_cortas, columns=etiquetas_cortas, inplace=True)
+
+        colors = ['#cce5ff', '#99ccff', '#ffcc99', '#ff9999']  
+        cmap = LinearSegmentedColormap.from_list("soft_cmap", colors)
+
+        plt.figure(figsize=(10, 8))
+
+        sns.heatmap(
+            corr,
+            annot=True,
+            fmt=".2f",
+            cmap=cmap,
+            linewidths=0.5,
+            linecolor='gray',
+            cbar_kws={'shrink': 0.7, 'label': 'Correlación'},
+            vmin=0, vmax=1  
+        )
+
+        plt.xticks(rotation=45, ha='right', fontsize=10)
+        plt.yticks(rotation=0, fontsize=10)
+
+        plt.title("Mapa de calor de correlaciones entre competencias digitales", fontsize=14, fontweight='bold', pad=20)
+        plt.tight_layout()
+
+        ruta_guardado = os.path.join(self.generar_direccion(), 'correlacion_competencias.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        plt.close()
+        return ruta_guardado
+
+    def boxplot_edad_fundamentos(self):
+        import numpy as np
+        
+        data = self.data.edad_fundamentos_digitales()
+        
+        groups = ["Sí", "No"] 
+        box_data = [data.loc[data["Respuesta"]==g, "Edad"].values for g in groups]
+        
+        fig = plt.figure(figsize=(10, 6))
+        ax = plt.gca()
+        bp = ax.boxplot(box_data, labels=groups, showfliers=True, patch_artist=True)
+        
+        colors = ['#66b3ff', '#ff9999']
+        for patch, color in zip(bp['boxes'], colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.7)
+        
+        ax.set_xlabel("Respuesta", fontsize=12, fontweight='bold')
+        ax.set_ylabel("Edad (años)", fontsize=12, fontweight='bold')
+        ax.set_title("Distribución de edad por respuesta sobre fundamentos digitales", 
+                    fontsize=14, fontweight='bold', pad=20)
+        
+        ax.grid(axis='y', linestyle='--', alpha=0.7)
+        
+        ax.tick_params(axis='both', which='major', labelsize=11)
+        
+        plt.tight_layout()
+        
+        ruta_guardado = os.path.join(self.generar_direccion(), 'boxplot_edad_por_respuesta.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        plt.close()
+        return ruta_guardado
+
+    def radar_deficiencias_edad(self):
+        import numpy as np
+        from math import pi
+        
+        work, group_stats_no, n_by_group, items_text, labels = self.data.radar_deficiencias_edad()
+        
+        categories = items_text
+        N = len(categories)
+        angles = [n / float(N) * 2 * pi for n in range(N)]
+        angles += angles[:1]
+
+        fig = plt.figure(figsize=(12, 8))
+        ax = plt.subplot(111, polar=True)
+
+        ax.set_theta_offset(pi / 2)
+        ax.set_theta_direction(-1)
+        ax.set_thetagrids(np.degrees(angles[:-1]), [str(i+1) for i in range(N)])
+        ax.set_rlabel_position(0)
+        ax.set_ylim(0, 100)
+        ax.set_yticks([20, 40, 60, 80, 100])
+        ax.set_yticklabels(["20%", "40%", "60%", "80%", "100%"])
+
+        colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD']
+        
+        for i, grp in enumerate(labels):
+            if grp in group_stats_no.index:
+                values = group_stats_no.loc[grp, categories].tolist()
+                values += values[:1]
+                ax.plot(angles, values, linewidth=2.5, label=f"{grp} (n={n_by_group[grp]})", color=colors[i])
+                ax.fill(angles, values, alpha=0.15, color=colors[i])
+
+        ax.set_title("Deficiencias en Habilidades Digitales por Grupo de Edad\n(% que responde 'No')", 
+                    fontsize=14, fontweight='bold', pad=20)
+        ax.legend(loc="upper right", bbox_to_anchor=(1.35, 1.05), fontsize=10)
+
+        for i, (angle, category) in enumerate(zip(angles[:-1], categories)):
+            ax.text(angle, 110, f"{i+1}", ha='center', va='center', fontweight='bold', fontsize=12)
+        
+        plt.tight_layout()
+        
+        ruta_guardado = os.path.join(self.generar_direccion(), 'radar_deficiencias_edad.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        plt.close()
+        return ruta_guardado
