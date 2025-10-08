@@ -5,6 +5,8 @@ import pandas as pd
 
 from src.processing_data import Data
 
+from matplotlib.colors import LinearSegmentedColormap
+
 
 class Graphics:
     def __init__(self):
@@ -250,3 +252,53 @@ class Graphics:
         plt.show()
         plt.close()
                 
+    def correlacion_graphic(self):
+        # Obtener matriz de correlación
+        corr = self.data.correlacion_data()
+
+        # Etiquetas cortas
+        etiquetas_cortas = {
+            'Tiene conocimientos de computacion y navegacion en internet': 'Comp-Internet',
+            'Identifica parametros que deben cumplir las paginas web y la informacion online para considerar su confiabilidad y calidad': 'Confiabilidad',
+            'Sabe editar y modificar con herramientas digitales, el formato de diferentes tipos de archivo textos, fotografias, videos': 'Edicion-Archivos',
+            'Conoce y actua con prudencia cuando recibe mensajes cuyo remitente, contenido o archivo adjunto sea desconocido (SPAM)': 'Seguridad',
+            'Se interesa en conocer las politicas de privacidad de las plataformas que utiliza en Internet, asi como el tratamiento que hacen de sus datos personales': 'Privacidad',
+            'Es capaz de evaluar y elegir de manera adecuada un dispositivo, software, aplicacion o servicio para realizar sus tareas': 'Eval-Tecnologica'
+        }
+
+        corr.rename(index=etiquetas_cortas, columns=etiquetas_cortas, inplace=True)
+
+    
+        colors = ['#cce5ff', '#99ccff', '#ffcc99', '#ff9999']  
+        cmap = LinearSegmentedColormap.from_list("soft_cmap", colors)
+
+
+        plt.figure(figsize=(10,8))
+
+
+        sns.heatmap(
+            corr,
+            annot=True,
+            fmt=".2f",
+            cmap=cmap,
+            linewidths=0.5,
+            linecolor='gray',
+            cbar_kws={'shrink': 0.7, 'label': 'Correlación'},
+            vmin=0, vmax=1  
+        )
+
+        # Rotación de etiquetas
+        plt.xticks(rotation=45, ha='right', fontsize=10)
+        plt.yticks(rotation=0, fontsize=10)
+
+        plt.title("Mapa de calor de correlaciones entre competencias digitales", fontsize=14, fontweight='bold', pad=20)
+        plt.tight_layout()
+
+        ruta_guardado  = os.path.join(self.generar_direccion(),'correlacion_competencias.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+
+        plt.show()
+
+
+                
+

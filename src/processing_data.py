@@ -195,3 +195,21 @@ class Data:
         print(f"Total de registros: {len(df_copy)}")
         
         return df_copy, preguntas_originales, mapa_preguntas
+
+    def correlacion_data(self):
+        df = self.df.copy()
+        columnas = [
+            'Tiene conocimientos de computacion y navegacion en internet',
+            'Identifica parametros que deben cumplir las paginas web y la informacion online para considerar su confiabilidad y calidad',
+            'Sabe editar y modificar con herramientas digitales, el formato de diferentes tipos de archivo textos, fotografias, videos',
+            'Conoce y actua con prudencia cuando recibe mensajes cuyo remitente, contenido o archivo adjunto sea desconocido (SPAM)',
+            'Se interesa en conocer las politicas de privacidad de las plataformas que utiliza en Internet, asi como el tratamiento que hacen de sus datos personales',
+            'Es capaz de evaluar y elegir de manera adecuada un dispositivo, software, aplicacion o servicio para realizar sus tareas'
+        ]
+
+        for col in columnas:
+            df[col] = df[col].str.strip().str.lower().replace({'sí': 1, 'si': 1, 'no': 0})
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
+
+        corr = df[columnas].corr()
+        return corr
