@@ -15,14 +15,7 @@
 
 ---
 
-## 📝 Descripción del Proyecto
-Breve descripción clara del proyecto (2–5 líneas). Indica:
-- ¿Qué problema resuelve?
-  
-- ¿Cuál es el objetivo principal?
-  
-- ¿Quiénes son los usuarios o beneficiarios?
-  
+## 📝 Descripción del Proyecto  
 El proyecto analiza el analfabetismo digital en Ecuador para identificar las principales brechas en el uso de la tecnología entre distintos grupos y regiones del país.
 Busca proporcionar información estratégica que permita diseñar programas de capacitación digital y políticas públicas inclusivas.
 Los beneficiarios son empresas, instituciones públicas y comunidades que podrán usar estos datos para reducir la brecha digital y fomentar la inclusión tecnológica.
