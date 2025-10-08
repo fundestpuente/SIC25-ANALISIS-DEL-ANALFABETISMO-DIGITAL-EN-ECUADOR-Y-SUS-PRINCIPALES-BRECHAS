@@ -2,7 +2,7 @@
 
 **Curso:** Samsung Innovation Campus – Módulo de Python (Ecuador 2025)  
 **Seccion:** <ecuador03 | ecuador04>  
-**Carpeta:** `/<ecuador03 o ecuador04>/<proyecto-xx-nombre>`
+**Carpeta:** ecuador03/Análisis del analfabetismo digital en Ecuador y sus principales brechas
 
 ---
 
