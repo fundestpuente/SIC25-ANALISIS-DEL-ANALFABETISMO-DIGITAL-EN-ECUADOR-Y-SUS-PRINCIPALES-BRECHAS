@@ -298,6 +298,111 @@ class Graphics:
         plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
 
         plt.show()
+        plt.close()
+
+    def boxplot_edad_fundamentos(self):
+        """
+        Genera un boxplot que muestra la distribución de edad por respuesta 
+        sobre conocimientos de fundamentos digitales y programación
+        """
+        import numpy as np
+        
+        # Obtener datos del procesamiento
+        data = self.data.edad_fundamentos_digitales()
+        
+        # Listas para el boxplot
+        groups = ["Sí", "No"] 
+        box_data = [data.loc[data["Respuesta"]==g, "Edad"].values for g in groups]
+        
+        # Crear la gráfica
+        fig = plt.figure(figsize=(10, 6))
+        ax = plt.gca()
+        bp = ax.boxplot(box_data, tick_labels=groups, showfliers=True, patch_artist=True)
+        
+        # Personalizar colores de las cajas
+        colors = ['#66b3ff', '#ff9999']
+        for patch, color in zip(bp['boxes'], colors):
+            patch.set_facecolor(color)
+            patch.set_alpha(0.7)
+        
+        # Configurar la gráfica
+        ax.set_xlabel("Respuesta", fontsize=12, fontweight='bold')
+        ax.set_ylabel("Edad (años)", fontsize=12, fontweight='bold')
+        ax.set_title("Distribución de edad por respuesta sobre fundamentos digitales", 
+                    fontsize=14, fontweight='bold', pad=20)
+        
+        # Agregar grid
+        ax.grid(axis='y', linestyle='--', alpha=0.7)
+        
+        # Personalizar ejes
+        ax.tick_params(axis='both', which='major', labelsize=11)
+        
+        plt.tight_layout()
+        
+        # Guardar la gráfica
+        ruta_guardado = os.path.join(self.generar_direccion(), 'boxplot_edad_por_respuesta.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        
+        plt.show()
+        plt.close()
+
+    def radar_deficiencias_edad(self):
+        """
+        Genera un gráfico de radar que muestra las deficiencias en habilidades digitales 
+        por grupo de edad
+        """
+        import numpy as np
+        from math import pi
+        
+        # Obtener datos del procesamiento
+        work, group_stats_no, n_by_group, items_text, labels = self.data.radar_deficiencias_edad()
+        
+        # Configurar gráfico de radar
+        categories = items_text
+        N = len(categories)
+        angles = [n / float(N) * 2 * pi for n in range(N)]
+        angles += angles[:1]  # cerrar el círculo
+
+        fig = plt.figure(figsize=(12, 8))
+        ax = plt.subplot(111, polar=True)
+
+        # Configuración de ejes
+        ax.set_theta_offset(pi / 2)
+        ax.set_theta_direction(-1)
+        ax.set_thetagrids(np.degrees(angles[:-1]), [str(i+1) for i in range(N)])
+        ax.set_rlabel_position(0)
+        ax.set_ylim(0, 100)
+        ax.set_yticks([20, 40, 60, 80, 100])
+        ax.set_yticklabels(["20%", "40%", "60%", "80%", "100%"])
+
+        # Colores para cada grupo de edad
+        colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD']
+        
+        # Trazar por grupo
+        for i, grp in enumerate(labels):
+            if grp in group_stats_no.index:
+                values = group_stats_no.loc[grp, categories].tolist()
+                values += values[:1]
+                ax.plot(angles, values, linewidth=2.5, label=f"{grp} (n={n_by_group[grp]})", color=colors[i])
+                ax.fill(angles, values, alpha=0.15, color=colors[i])
+
+        # Configurar título y leyenda
+        ax.set_title("Deficiencias en Habilidades Digitales por Grupo de Edad\n(% que responde 'No')", 
+                    fontsize=14, fontweight='bold', pad=20)
+        ax.legend(loc="upper right", bbox_to_anchor=(1.35, 1.05), fontsize=10)
+
+        # Agregar etiquetas de las categorías en el perímetro
+        for i, (angle, category) in enumerate(zip(angles[:-1], categories)):
+            ax.text(angle, 110, f"{i+1}", ha='center', va='center', fontweight='bold', fontsize=12)
+        
+        plt.tight_layout()
+        
+        # Guardar la gráfica
+        ruta_guardado = os.path.join(self.generar_direccion(), 'radar_deficiencias_edad.png')
+        plt.savefig(ruta_guardado, format='png', dpi=300, bbox_inches='tight')
+        
+        plt.show()
+        plt.close()
 
 
                 
