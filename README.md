@@ -23,9 +23,9 @@ Breve descripción clara del proyecto (2–5 líneas). Indica:
   
 - ¿Quiénes son los usuarios o beneficiarios?
   
-
-**Ejemplo:**  
-> Este proyecto es una aplicación en Python para la gestión de inventarios de pequeñas tiendas. Permite agregar productos, registrar ventas y generar reportes básicos para facilitar el control de stock.
+El proyecto analiza el analfabetismo digital en Ecuador para identificar las principales brechas en el uso de la tecnología entre distintos grupos y regiones del país.
+Busca proporcionar información estratégica que permita diseñar programas de capacitación digital y políticas públicas inclusivas.
+Los beneficiarios son empresas, instituciones públicas y comunidades que podrán usar estos datos para reducir la brecha digital y fomentar la inclusión tecnológica.
 
 ---
 
