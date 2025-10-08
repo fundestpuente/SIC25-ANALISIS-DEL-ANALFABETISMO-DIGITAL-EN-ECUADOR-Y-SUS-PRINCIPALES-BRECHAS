@@ -2,8 +2,10 @@ import matplotlib.pyplot as plt
 import os
 import seaborn as sns
 import pandas as pd
+import numpy as np
 
 from src.processing_data import Data
+from math import pi
 
 from matplotlib.colors import LinearSegmentedColormap
 
@@ -305,7 +307,6 @@ class Graphics:
         Genera un boxplot que muestra la distribución de edad por respuesta 
         sobre conocimientos de fundamentos digitales y programación
         """
-        import numpy as np
         
         # Obtener datos del procesamiento
         data = self.data.edad_fundamentos_digitales()
@@ -317,7 +318,7 @@ class Graphics:
         # Crear la gráfica
         fig = plt.figure(figsize=(10, 6))
         ax = plt.gca()
-        bp = ax.boxplot(box_data, tick_labels=groups, showfliers=True, patch_artist=True)
+        bp = ax.boxplot(box_data, tick_labels=groups, showfliers=True, patch_artist=True) #type:ignore
         
         # Personalizar colores de las cajas
         colors = ['#66b3ff', '#ff9999']
@@ -351,8 +352,6 @@ class Graphics:
         Genera un gráfico de radar que muestra las deficiencias en habilidades digitales 
         por grupo de edad
         """
-        import numpy as np
-        from math import pi
         
         # Obtener datos del procesamiento
         work, group_stats_no, n_by_group, items_text, labels = self.data.radar_deficiencias_edad()
@@ -367,10 +366,10 @@ class Graphics:
         ax = plt.subplot(111, polar=True)
 
         # Configuración de ejes
-        ax.set_theta_offset(pi / 2)
-        ax.set_theta_direction(-1)
-        ax.set_thetagrids(np.degrees(angles[:-1]), [str(i+1) for i in range(N)])
-        ax.set_rlabel_position(0)
+        ax.set_theta_offset(pi / 2) #type:ignore
+        ax.set_theta_direction(-1) #type:ignore
+        ax.set_thetagrids(np.degrees(angles[:-1]), [str(i+1) for i in range(N)]) #type:ignore
+        ax.set_rlabel_position(0) #type:ignore
         ax.set_ylim(0, 100)
         ax.set_yticks([20, 40, 60, 80, 100])
         ax.set_yticklabels(["20%", "40%", "60%", "80%", "100%"])
@@ -381,7 +380,7 @@ class Graphics:
         # Trazar por grupo
         for i, grp in enumerate(labels):
             if grp in group_stats_no.index:
-                values = group_stats_no.loc[grp, categories].tolist()
+                values = group_stats_no.loc[grp, categories].tolist() #type:ignore
                 values += values[:1]
                 ax.plot(angles, values, linewidth=2.5, label=f"{grp} (n={n_by_group[grp]})", color=colors[i])
                 ax.fill(angles, values, alpha=0.15, color=colors[i])
