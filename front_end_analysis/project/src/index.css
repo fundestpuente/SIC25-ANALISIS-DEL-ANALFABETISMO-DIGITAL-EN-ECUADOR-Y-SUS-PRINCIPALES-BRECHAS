@@ -1,3 +1,254 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Variables de colores personalizadas */
+:root {
+  --navy-primary: #1E3A8A;
+  --navy-secondary: #1E40AF;
+  --gray-light: #F3F4F6;
+  --accent-gold: #D4AF37;
+  --white: #FFFFFF;
+}
+
+/* Clases personalizadas */
+@layer components {
+  .font-roboto {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  
+  .font-opensans {
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .text-navy-primary {
+    color: var(--navy-primary);
+  }
+
+  .text-navy-secondary {
+    color: var(--navy-secondary);
+  }
+
+  .text-accent-gold {
+    color: var(--accent-gold);
+  }
+
+  .bg-navy-primary {
+    background-color: var(--navy-primary);
+  }
+
+  .bg-navy-secondary {
+    background-color: var(--navy-secondary);
+  }
+
+  .bg-accent-gold {
+    background-color: var(--accent-gold);
+  }
+
+  .border-navy-primary {
+    border-color: var(--navy-primary);
+  }
+
+  .border-accent-gold {
+    border-color: var(--accent-gold);
+  }
+
+  /* Sombras elegantes */
+  .shadow-elegant {
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .shadow-elevated {
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Gradientes */
+  .bg-gradient-elegant {
+    background: linear-gradient(135deg, var(--gray-light) 0%, var(--white) 100%);
+  }
+
+  .bg-gradient-navy {
+    background: linear-gradient(135deg, var(--navy-primary) 0%, var(--navy-secondary) 100%);
+  }
+
+  .bg-gradient-gold {
+    background: linear-gradient(135deg, var(--accent-gold) 0%, #F4D03F 100%);
+  }
+
+  /* Componentes estilizados */
+  .card-elegant {
+    @apply bg-white rounded-lg shadow-elegant border border-gray-100 p-6;
+    transition: all 0.3s ease;
+  }
+
+  .card-elegant:hover {
+    @apply shadow-elevated;
+    transform: translateY(-2px);
+  }
+
+  .btn-primary {
+    @apply bg-navy-primary text-white px-6 py-3 rounded-lg font-medium;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    @apply bg-navy-secondary shadow-md;
+    transform: translateY(-1px);
+  }
+
+  .btn-gold {
+    @apply bg-accent-gold text-white px-6 py-3 rounded-lg font-medium;
+    transition: all 0.3s ease;
+  }
+
+  .btn-gold:hover {
+    background-color: #C8A72D;
+    @apply shadow-md;
+    transform: translateY(-1px);
+  }
+
+  /* Efectos de hover para navegación */
+  .nav-item {
+    @apply flex items-center space-x-3 px-4 py-3 rounded-lg text-left;
+    transition: all 0.3s ease;
+  }
+
+  .nav-item:hover {
+    @apply bg-gray-100;
+    color: var(--navy-primary);
+  }
+
+  .nav-item.active {
+    @apply bg-navy-primary text-white shadow-md;
+  }
+
+  /* Animaciones personalizadas */
+  .fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  .slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+  }
+
+  .slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Estilos para scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--navy-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--navy-secondary);
+}
+
+/* Responsividad mejorada */
+@media (max-width: 768px) {
+  .card-elegant {
+    @apply p-4;
+  }
+  
+  .nav-item {
+    @apply px-3 py-2;
+  }
+}
+
+/* Animaciones personalizadas para gráficos */
+@keyframes shimmer {
+  0% { 
+    background-position: -200% 0; 
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% { 
+    background-position: 200% 0; 
+    opacity: 0.3;
+  }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px); 
+  }
+  50% { 
+    transform: translateY(-10px); 
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.6), 0 0 30px rgba(139, 92, 246, 0.4);
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
